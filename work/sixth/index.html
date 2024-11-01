@@ -48,16 +48,22 @@
     $(function() {
       $(document).on('click', '#pokemon_search', function() {
         var ids = Math.floor(Math.random() * 151);
-        var baseUrl = 'https://pokeapi.co/api/v2/pokemon-species/';
+        var baseUrl = 'https://pokeapi.co/api/v2/pokemon/';
         var url = `${baseUrl}${ids}/`;
-        var imgBaseUrl = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
-        var imgUrl = `${imgBaseUrl}${ids}.png`;
         $.ajax({
           url:url,
-          method:'GET'
+          method:'GET',
         }).done(function(res) {
-          var pokemonName = res.names[0].name;
           $('#wrapper').html(encountHtml);
+          $('.img').attr('src', res.sprites.front_default);
+          $.ajax({
+            url:res.species.url,
+            method:'GET',
+          }).done(function(res) {
+            $('.name').text(res.names[0].name);
+          }).fail(function() {
+            //エラー
+          });
           $('#catch').on('click', function() {
             $.ajax({
               url:'https://pokeapi.co/api/v2/item/4',
