@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../common/css/reset.css">
+  <link rel="stylesheet" href="../../common/css/base.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <title>Document</title>
+</head>
+<body>
+  <div class="wrapper" id="wrapper">
+    <button type="button" class="btn search-btn" id="pokemon_search">ポケモンを探す</button>
+  </div>
+  <script src="../../common/js/jquery.js"></script>
+  <script>
+     // 「捕まえる」失敗時の画面表示
+    let failHtml =
+    `
+      <p class="text">逃げられてしまった...</p>
+      <button class="btn mt" data-js="reset">戻る</button>
+    `
+
+    // 「ポケモンを探す」後の画面表示
+    let encountHtml =
+    `
+      <p class="name"></p>
+      <div>
+        <img class="img" src="" alt="">
+      </div>
+      <div>
+        <button class="btn" id="catch">捕まえる</button>
+        <button class="btn" data-js="reset">逃げる</button>
+      </div>
+    `
+
+    // 「捕まえる」成功時の画面表示
+    let doneHtml =
+    `
+      <p class="name">ゲットしました</p>
+      <div>
+        <img class="img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="">
+      </div>
+      <button class="btn" data-js="reset">戻る</button>
+    `
+
+    $(function() {
+      $(document).on('click', '#pokemon_search', function() {
+        var ids = Math.floor(Math.random() * 151);
+        var baseUrl = 'https://pokeapi.co/api/v2/pokemon-species/';
+        var url = `${baseUrl}${ids}/`;
+        var imgBaseUrl = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
+        var imgUrl = `${imgBaseUrl}${ids}.png`;
+        $.ajax({
+          url:url,
+          method:'GET'
+        }).done(function(res) {
+          var pokemonName = res.names[0].name;
+          $('#wrapper').html(encountHtml);
+          $('#catch').on('click', function() {
+            $.ajax({
+              url:'https://pokeapi.co/api/v2/item/4',
+            }).done(function(res) {
+              var number = Math.floor(Math.random() * 2);
+              if(number === 0) {
+                $('#wrapper').html(doneHtml);
+              }else{
+                $('#wrapper').html(failHtml);
+              };
+            }).fail(function() {
+              //エラー
+            });
+          })
+        }).fail(function() {
+          //エラー
+        });
+      })
+      $(document).on('click', '.btn', function(res) {
+        $('#wrapper').html('<button type="button" class="btn search-btn" id="pokemon_search">ポケモンを探す</button>');
+      })
+    })
+  </script>
+</body>
+</html>
